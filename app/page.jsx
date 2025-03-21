@@ -40,6 +40,20 @@ export default function Home() {
           href="/behavioral-analysis"
         />
       </div>
+      <div className="text-center mb-7 py-5">
+        <h2 className="text-2xl font-bold mb-4">Ready to Start Analyzing?</h2>
+        <p className="text-muted-foreground mb-6">
+          Choose one of our analysis tools to begin detecting AI-generated content.
+        </p>
+        <div className="flex flex-wrap justify-center gap-4">
+          <Button asChild className="text-sm rounded-lg p-2 hover:text-white hover:bg-cyan-950 transition-colors duration-300" size="lg">
+            <Link href="/text-analysis">Analyze Text</Link>
+          </Button>
+          <Button asChild size="lg" className="text-sm rounded-lg p-2 hover:text-black hover:bg-blue-500 transition-colors duration-300" variant="outline">
+            <Link href="/image-analysis">Analyze Images</Link>
+          </Button>
+        </div>
+      </div>
 
       <div className="bg-muted rounded-lg p-8 mb-12">
         <div className="max-w-3xl mx-auto">
@@ -93,18 +107,52 @@ export default function Home() {
         </div>
       </div>
 
-     <div className="text-center">
-        <h2 className="text-2xl font-bold mb-4">Ready to Start Analyzing?</h2>
-        <p className="text-muted-foreground mb-6">
-          Choose one of our analysis tools to begin detecting AI-generated content.
-        </p>
-        <div className="flex flex-wrap justify-center gap-4">
-          <Button asChild className="text-sm rounded-lg p-2 hover:text-white hover:bg-cyan-950 transition-colors duration-300" size="lg">
-            <Link href="/text-analysis">Analyze Text</Link>
-          </Button>
-          <Button asChild size="lg" className="text-sm rounded-lg p-2 hover:text-black hover:bg-blue-500 transition-colors duration-300" variant="outline">
-            <Link href="/image-analysis">Analyze Images</Link>
-          </Button>
+      
+
+      <div className="bg-muted rounded-lg p-8 my-16">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-2xl font-bold mb-4">About Us</h2>
+          <p className="text-muted-foreground mb-6">
+            We are a team of experts in digital forensics, machine learning, and cybersecurity dedicated to developing cutting-edge tools for detecting AI-generated content. Our mission is to help organizations and individuals maintain trust and authenticity in the digital world.
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
+            <div className="flex flex-col items-center">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                <FileText className="h-8 w-8 text-primary" />
+              </div>
+              <h3 className="font-semibold mb-2">Research-Backed</h3>
+              <p className="text-sm text-muted-foreground">
+                Our detection methods are built on peer-reviewed research and constantly updated to match evolving AI capabilities.
+              </p>
+            </div>
+            
+            <div className="flex flex-col items-center">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                <Database className="h-8 w-8 text-primary" />
+              </div>
+              <h3 className="font-semibold mb-2">Privacy-Focused</h3>
+              <p className="text-sm text-muted-foreground">
+                We prioritize your privacy and data security, with optional anonymous analysis and strict data handling policies.
+              </p>
+            </div>
+            
+            <div className="flex flex-col items-center">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                <BarChart3 className="h-8 w-8 text-primary" />
+              </div>
+              <h3 className="font-semibold mb-2">Continuously Improving</h3>
+              <p className="text-sm text-muted-foreground">
+                Our tools evolve alongside AI technology, ensuring reliable detection of even the most sophisticated generated content.
+              </p>
+            </div>
+          </div>
+          
+          <div className="mt-10">
+            <Button asChild className="text-sm rounded-lg p-2 hover:text-white hover:bg-cyan-950 transition-colors duration-300" size="lg">
+              <Link href="/about-us">Contact Our Team</Link>
+            </Button>
+          </div>
         </div>
       </div>
     </div>
@@ -128,6 +176,5 @@ function FeatureCard({ icon, title, description, href }) {
     </Button>
   </CardFooter>
 </Card>
-
   )
 }

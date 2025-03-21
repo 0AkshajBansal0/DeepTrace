@@ -1,5 +1,5 @@
 "use client"
-import { Moon, Sun } from "lucide-react"
+import { ArrowRight, FileText, Image, Database, BarChart3, Sun, Moon } from "lucide-react"
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import {
@@ -8,9 +8,30 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useEffect, useState } from "react"
 
 export function ModeToggle() {
   const { theme, setTheme } = useTheme()
+  // Add mounting state to prevent hydration mismatch
+  const [mounted, setMounted] = useState(false)
+
+  // Only show the toggle after component mounts on client
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Return placeholder during server rendering
+  if (!mounted) {
+    return (
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label="Toggle theme"
+      >
+        <div className="w-6 h-6"></div>
+      </Button>
+    )
+  }
 
   return (
     <DropdownMenu>
