@@ -3,42 +3,26 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Loader2, AlertCircle, Search } from "lucide-react"
+import { Loader2, AlertCircle, Upload, FileText } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-} from "recharts"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
-export default function BehavioralAnalysisPage() {
-  const [url, setUrl] = useState("")
+export default function MetadataAnalysisPage() {
+  const [file, setFile] = useState(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [results, setResults] = useState(null)
   const [error, setError] = useState(null)
 
-  const handleUrlChange = (e) => {
-    setUrl(e.target.value)
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0]
+    setFile(selectedFile)
   }
 
-  const analyzeContent = async () => {
-    if (!url) {
-      setError("Please enter a URL to analyze")
+  const analyzeMetadata = async () => {
+    if (!file) {
+      setError("Please upload a file to analyze")
       return
     }
 
@@ -46,37 +30,141 @@ export default function BehavioralAnalysisPage() {
     setError(null)
 
     try {
-      // Call the API endpoint that will use environment variables for API keys
-      const response = await fetch('/api/behavioral-analysis', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ url })
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "API request failed");
-      }
-
-      const data = await response.json();
-      setResults(data);
+      // In a real implementation, you would call your API here
+      // For demo purposes, we'll simulate the analysis
+      simulateAnalysis()
     } catch (err) {
-      console.error("Analysis error:", err);
-      setError(err.message || "An error occurred during analysis");
-    } finally {
-      setIsAnalyzing(false);
+      setError(err.message || "An error occurred during analysis")
+      setIsAnalyzing(false)
     }
   }
 
   const resetAnalysis = () => {
-    setUrl("")
+    setFile(null)
     setResults(null)
     setError(null)
   }
 
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"]
+  // For demo purposes, simulate analysis with mock data
+  const simulateAnalysis = () => {
+    setTimeout(() => {
+      const mockResults = {
+        filename: file.name,
+        fileType: file.type,
+        fileSize: file.size,
+        lastModified: new Date(file.lastModified).toLocaleString(),
+        metadata: {
+          general: [
+            { name: "File Format", value: getFileFormat(file.type), status: "normal" },
+            {
+              name: "Creation Date",
+              value: new Date(Date.now() - Math.random() * 10000000000).toLocaleString(),
+              status: "normal",
+            },
+            { name: "Last Modified", value: new Date(file.lastModified).toLocaleString(), status: "normal" },
+            { name: "File Size", value: formatFileSize(file.size), status: "normal" },
+          ],
+          image: file.type.startsWith("image/")
+            ? [
+                { name: "Dimensions", value: "3840 x 2160", status: "normal" },
+                { name: "Color Space", value: "sRGB", status: "normal" },
+                { name: "Bit Depth", value: "24", status: "normal" },
+                {
+                  name: "Camera Make",
+                  value: Math.random() > 0.5 ? "Canon" : "None",
+                  status: Math.random() > 0.5 ? "normal" : "suspicious",
+                },
+                {
+                  name: "Camera Model",
+                  value: Math.random() > 0.5 ? "EOS R5" : "None",
+                  status: Math.random() > 0.5 ? "normal" : "suspicious",
+                },
+                {
+                  name: "Exposure",
+                  value: Math.random() > 0.5 ? "1/125 sec" : "None",
+                  status: Math.random() > 0.5 ? "normal" : "suspicious",
+                },
+                {
+                  name: "Aperture",
+                  value: Math.random() > 0.5 ? "f/2.8" : "None",
+                  status: Math.random() > 0.5 ? "normal" : "suspicious",
+                },
+                {
+                  name: "ISO",
+                  value: Math.random() > 0.5 ? "400" : "None",
+                  status: Math.random() > 0.5 ? "normal" : "suspicious",
+                },
+                {
+                  name: "GPS Coordinates",
+                  value: Math.random() > 0.5 ? "None" : "40.7128° N, 74.0060° W",
+                  status: Math.random() > 0.5 ? "normal" : "suspicious",
+                },
+              ]
+            : [],
+          document:
+            file.type.includes("pdf") || file.type.includes("word")
+              ? [
+                  { name: "Author", value: Math.random() > 0.5 ? "John Doe" : "None", status: "normal" },
+                  {
+                    name: "Created",
+                    value: new Date(Date.now() - Math.random() * 10000000000).toLocaleString(),
+                    status: "normal",
+                  },
+                  {
+                    name: "Modified",
+                    value: new Date(Date.now() - Math.random() * 5000000000).toLocaleString(),
+                    status: "normal",
+                  },
+                  {
+                    name: "Application",
+                    value: Math.random() > 0.5 ? "Microsoft Word" : "Adobe Acrobat",
+                    status: "normal",
+                  },
+                  { name: "PDF Version", value: file.type.includes("pdf") ? "1.7" : "N/A", status: "normal" },
+                ]
+              : [],
+        },
+        analysis: {
+          inconsistencies: [
+            Math.random() > 0.5
+              ? { description: "Missing EXIF data typically found in camera photos", severity: "medium" }
+              : null,
+            Math.random() > 0.5
+              ? { description: "Creation date is more recent than modification date", severity: "high" }
+              : null,
+            Math.random() > 0.5 ? { description: "Metadata shows editing software traces", severity: "low" } : null,
+          ].filter(Boolean),
+          manipulationScore: Math.floor(Math.random() * 100),
+          verdict: Math.random() > 0.7 ? "suspicious" : "normal",
+        },
+      }
+
+      setResults(mockResults)
+      setIsAnalyzing(false)
+    }, 2000)
+  }
+
+  const getFileFormat = (mimeType) => {
+    const formats = {
+      "image/jpeg": "JPEG Image",
+      "image/png": "PNG Image",
+      "image/gif": "GIF Image",
+      "image/webp": "WebP Image",
+      "application/pdf": "PDF Document",
+      "application/msword": "Word Document",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "Word Document (DOCX)",
+      "text/plain": "Text File",
+    }
+
+    return formats[mimeType] || mimeType
+  }
+
+  const formatFileSize = (bytes) => {
+    if (bytes < 1024) return bytes + " bytes"
+    else if (bytes < 1048576) return (bytes / 1024).toFixed(2) + " KB"
+    else if (bytes < 1073741824) return (bytes / 1048576).toFixed(2) + " MB"
+    else return (bytes / 1073741824).toFixed(2) + " GB"
+  }
 
   const getSeverityColor = (severity) => {
     switch (severity) {
@@ -95,60 +183,57 @@ export default function BehavioralAnalysisPage() {
     <div className="container mx-auto py-10 px-4">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold tracking-tight mb-2">Behavioral Analysis</h1>
-          <p className="text-muted-foreground">Track patterns in how AI-generated content spreads across platforms</p>
+          <h1 className="text-3xl font-bold tracking-tight mb-2">Metadata Analysis</h1>
+          <p className="text-muted-foreground">
+            Examine file metadata to detect inconsistencies and signs of manipulation
+          </p>
         </div>
 
-        <Card className="border-blue-700 p-4 mb-8">
+        <Card className="h-[530px] border-blue-700 p-4">
           <CardHeader>
-            <CardTitle>Analyze Content Spread</CardTitle>
-            <CardDescription>Enter a URL to analyze how the content has spread across the internet</CardDescription>
+            <CardTitle>Upload File</CardTitle>
+            <CardDescription>Upload an image, document, or other file to analyze its metadata</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="url">Content URL</Label>
-                <div className="flex space-x-2">
-                  <Input
-                    id="url"
-                    placeholder="https://example.com/article"
-                    value={url}
-                    onChange={handleUrlChange}
-                    disabled={isAnalyzing}
-                  />
-                  <Button 
-                    className="rounded-xl hover:bg-cyan-950 hover:text-white transition-colors duration-300 w-40 h-12 mb-2" 
-                    onClick={analyzeContent} 
-                    disabled={isAnalyzing || !url}
-                  >
-                    {isAnalyzing ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Analyzing...
-                      </>
-                    ) : (
-                      <>
-                        <Search className="mr-2 h-4 w-4" />
-                        Analyze
-                      </>
-                    )}
-                  </Button>
-                </div>
+            <div className="flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-12 text-center">
+              <FileText className="h-10 w-10 text-muted-foreground mb-4" />
+              <div className="mb-4">
+                <h3 className="font-medium">Upload a file</h3>
+                <p className="text-sm text-muted-foreground">Drag and drop or click to browse</p>
               </div>
-              <p className="text-sm text-muted-foreground">
-                Enter the URL of an article, social media post, or other content to analyze its spread pattern and
-                detect potential AI-generated content campaigns.
-              </p>
+              <input
+                type="file"
+                id="file-upload"
+                className="hidden"
+                onChange={handleFileChange}
+                disabled={isAnalyzing}
+              />
+              <Button asChild variant="secondary">
+                <label htmlFor="file-upload" className="h-14 w-32 rounded-xl hover:bg-cyan-500 hover:text-black transition-colors duration-300 cursor-pointer p-4 gap-2">
+                  <Upload className="mr-2 h-4 w-4" />
+                  Browse Files
+                </label>
+              </Button>
+              {file && (
+                <div className="mt-4 text-sm">
+                  Selected: <span className="font-medium">{file.name}</span> ({formatFileSize(file.size)})
+                </div>
+              )}
             </div>
           </CardContent>
           <CardFooter className="flex justify-between">
-            <Button 
-              className="rounded-xl hover:bg-cyan-500 hover:text-black transition-colors duration-300" 
-              variant="outline" 
-              onClick={resetAnalysis} 
-              disabled={isAnalyzing || (!url && !results)}
-            >
+            <Button className="m-4 rounded-xl hover:bg-cyan-500 hover:text-black transition-colors duration-300" variant="outline" onClick={resetAnalysis} disabled={isAnalyzing || (!file && !results)}>
               Clear
+            </Button>
+            <Button className="rounded-xl hover:bg-cyan-950 hover:text-white transition-colors duration-300 mr-4" onClick={analyzeMetadata} disabled={isAnalyzing || !file}>
+              {isAnalyzing ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Analyzing...
+                </>
+              ) : (
+                "Analyze Metadata"
+              )}
             </Button>
           </CardFooter>
         </Card>
@@ -164,15 +249,15 @@ export default function BehavioralAnalysisPage() {
         {isAnalyzing && (
           <Card className="mb-8">
             <CardHeader>
-              <CardTitle>Analyzing Content Spread</CardTitle>
-              <CardDescription>Tracking how the content has spread across platforms</CardDescription>
+              <CardTitle>Analyzing Metadata</CardTitle>
+              <CardDescription>Extracting and analyzing file metadata</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="flex items-center space-x-4">
                   <Loader2 className="h-8 w-8 animate-spin text-primary" />
                   <div>
-                    <p className="font-medium">Analyzing content from {url}</p>
+                    <p className="font-medium">Extracting metadata from {file?.name}</p>
                     <p className="text-sm text-muted-foreground">This may take a moment...</p>
                   </div>
                 </div>
@@ -185,253 +270,175 @@ export default function BehavioralAnalysisPage() {
           <>
             <Card className="mb-8">
               <CardHeader>
-                <CardTitle>Content Overview</CardTitle>
-                <CardDescription>Summary of the analyzed content and its spread pattern</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Analysis Results</CardTitle>
+                    <CardDescription>Metadata analysis for {results.filename}</CardDescription>
+                  </div>
+                  <Badge variant={results.analysis.verdict === "suspicious" ? "destructive" : "default"}>
+                    {results.analysis.verdict === "suspicious" ? "Suspicious" : "Normal"}
+                  </Badge>
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div className="bg-muted rounded-lg p-4">
-                      <p className="text-sm font-medium">Content URL</p>
-                      <p className="text-sm text-muted-foreground truncate">{results.url}</p>
-                    </div>
-                    <div className="bg-muted rounded-lg p-4">
-                      <p className="text-sm font-medium">Content Type</p>
-                      <p className="text-sm text-muted-foreground">{results.contentType}</p>
-                    </div>
-                    <div className="bg-muted rounded-lg p-4">
-                      <p className="text-sm font-medium">First Seen</p>
-                      <p className="text-sm text-muted-foreground">{results.firstSeen}</p>
-                    </div>
-                    <div className="bg-muted rounded-lg p-4">
-                      <p className="text-sm font-medium">Spread Pattern</p>
-                      <div className="flex items-center">
-                        <Badge variant={results.spreadPattern === "Viral" ? "warning" : "secondary"}>
-                          {results.spreadPattern}
-                        </Badge>
-                        <p className="text-sm text-muted-foreground ml-2">
-                          {results.spreadPattern === "Viral"
-                            ? "Rapid spread across multiple platforms"
-                            : "Steady growth in visibility over time"}
-                        </p>
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-medium mb-2">File Information</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-muted rounded-lg p-4">
+                        <p className="text-sm font-medium">File Name</p>
+                        <p className="text-sm text-muted-foreground">{results.filename}</p>
+                      </div>
+                      <div className="bg-muted rounded-lg p-4">
+                        <p className="text-sm font-medium">File Type</p>
+                        <p className="text-sm text-muted-foreground">{getFileFormat(results.fileType)}</p>
+                      </div>
+                      <div className="bg-muted rounded-lg p-4">
+                        <p className="text-sm font-medium">File Size</p>
+                        <p className="text-sm text-muted-foreground">{formatFileSize(results.fileSize)}</p>
+                      </div>
+                      <div className="bg-muted rounded-lg p-4">
+                        <p className="text-sm font-medium">Last Modified</p>
+                        <p className="text-sm text-muted-foreground">{results.lastModified}</p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="space-y-4">
+                  <div>
+                    <h3 className="text-lg font-medium mb-2">Manipulation Score</h3>
                     <div className="bg-muted rounded-lg p-4">
-                      <p className="text-sm font-medium mb-2">AI Content Probability</p>
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs text-muted-foreground">Human-Generated</span>
-                        <span className="text-xs text-muted-foreground">AI-Generated</span>
+                        <span className="text-sm font-medium">Likelihood of manipulation</span>
+                        <span className="text-sm font-medium">{results.analysis.manipulationScore}%</span>
                       </div>
-                      <div className="w-full bg-secondary rounded-full h-2.5 mb-2">
+                      <div className="w-full bg-secondary rounded-full h-2.5">
                         <div
-                          className={`h-2.5 rounded-full ${results.aiProbability > 70 ? "bg-destructive" : results.aiProbability > 30 ? "bg-warning" : "bg-primary"}`}
-                          style={{ width: `${results.aiProbability}%` }}
+                          className={`h-2.5 rounded-full ${results.analysis.manipulationScore > 70 ? "bg-destructive" : results.analysis.manipulationScore > 30 ? "bg-warning" : "bg-primary"}`}
+                          style={{ width: `${results.analysis.manipulationScore}%` }}
                         ></div>
                       </div>
-                      <div className="flex justify-between">
-                        <Badge
-                          variant={
-                            results.aiProbability > 70
-                              ? "destructive"
-                              : results.aiProbability > 30
-                                ? "warning"
-                                : "default"
-                          }
-                        >
-                          {results.aiProbability.toFixed(1)}%
-                        </Badge>
-                        <span className="text-xs text-muted-foreground">
-                          {results.aiProbability > 70
-                            ? "Likely AI-Generated"
-                            : results.aiProbability > 30
-                              ? "Possibly AI-Generated"
-                              : "Likely Human-Generated"}
-                        </span>
-                      </div>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        {results.analysis.manipulationScore > 70
+                          ? "High likelihood of manipulation detected"
+                          : results.analysis.manipulationScore > 30
+                            ? "Some signs of manipulation detected"
+                            : "Low likelihood of manipulation"}
+                      </p>
                     </div>
+                  </div>
 
-                    <div className="bg-muted rounded-lg p-4">
-                      <p className="text-sm font-medium mb-2">Detected Anomalies</p>
+                  {results.analysis.inconsistencies.length > 0 && (
+                    <div>
+                      <h3 className="text-lg font-medium mb-2">Detected Inconsistencies</h3>
                       <div className="space-y-2">
-                        {results.anomalies.map((anomaly, index) => (
-                          <div key={index} className="flex items-center justify-between">
-                            <span className="text-sm">{anomaly.description}</span>
-                            <Badge variant={getSeverityColor(anomaly.severity)}>{anomaly.severity}</Badge>
+                        {results.analysis.inconsistencies.map((inconsistency, index) => (
+                          <div key={index} className="flex items-start space-x-2 bg-muted rounded-lg p-4">
+                            <Badge variant={getSeverityColor(inconsistency.severity)}>{inconsistency.severity}</Badge>
+                            <p className="text-sm">{inconsistency.description}</p>
                           </div>
                         ))}
                       </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
 
-            <Tabs defaultValue="timeline" className="mb-8">
+            <Tabs defaultValue="all">
               <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="timeline">Spread Timeline</TabsTrigger>
-                <TabsTrigger value="platforms">Platform Distribution</TabsTrigger>
-                <TabsTrigger value="demographics">Demographics</TabsTrigger>
+                <TabsTrigger value="all">All Metadata</TabsTrigger>
+                <TabsTrigger value="suspicious">Suspicious Fields</TabsTrigger>
+                <TabsTrigger value="normal">Normal Fields</TabsTrigger>
               </TabsList>
 
-              <TabsContent value="timeline">
+              <TabsContent value="all">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Spread Timeline</CardTitle>
-                    <CardDescription>How the content has spread over time</CardDescription>
+                    <CardTitle>Complete Metadata</CardTitle>
+                    <CardDescription>All extracted metadata fields from the file</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="h-[300px]">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <LineChart
-                          data={results.spreadData.timeline}
-                          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                        >
-                          <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis dataKey="date" />
-                          <YAxis />
-                          <Tooltip />
-                          <Legend />
-                          <Line type="monotone" dataKey="shares" stroke="#8884d8" activeDot={{ r: 8 }} />
-                        </LineChart>
-                      </ResponsiveContainer>
-                    </div>
-                    <div className="mt-4 text-sm text-muted-foreground">
-                      <p>
-                        {results.spreadPattern === "Viral"
-                          ? "This content shows a viral spread pattern with rapid growth in shares over a short period of time. This pattern is sometimes associated with coordinated campaigns or highly engaging AI-generated content."
-                          : "This content shows a gradual spread pattern with steady growth over time. This pattern is typical of organic content sharing."}
-                      </p>
-                    </div>
+                    <MetadataTable
+                      metadata={[
+                        ...results.metadata.general,
+                        ...(results.metadata.image || []),
+                        ...(results.metadata.document || []),
+                      ]}
+                    />
                   </CardContent>
                 </Card>
               </TabsContent>
 
-              <TabsContent value="platforms">
+              <TabsContent value="suspicious">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Platform Distribution</CardTitle>
-                    <CardDescription>How the content has spread across different platforms</CardDescription>
+                    <CardTitle>Suspicious Metadata</CardTitle>
+                    <CardDescription>Metadata fields that show signs of manipulation or inconsistency</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="h-[300px]">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <BarChart
-                          data={results.spreadData.platforms}
-                          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                        >
-                          <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis dataKey="name" />
-                          <YAxis />
-                          <Tooltip />
-                          <Legend />
-                          <Bar dataKey="shares" fill="#8884d8" />
-                        </BarChart>
-                      </ResponsiveContainer>
-                    </div>
-                    <div className="mt-4 text-sm text-muted-foreground">
-                      <p>
-                        The chart shows how the content has been shared across different social media platforms.
-                        {results.spreadData.platforms[0].shares > 3000
-                          ? " The high concentration on a single platform may indicate a targeted campaign."
-                          : " The distribution across multiple platforms suggests organic sharing."}
-                      </p>
-                    </div>
+                    <MetadataTable
+                      metadata={[
+                        ...results.metadata.general,
+                        ...(results.metadata.image || []),
+                        ...(results.metadata.document || []),
+                      ].filter((item) => item.status === "suspicious")}
+                    />
                   </CardContent>
                 </Card>
               </TabsContent>
 
-              <TabsContent value="demographics">
+              <TabsContent value="normal">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Demographic Distribution</CardTitle>
-                    <CardDescription>Age groups sharing the content</CardDescription>
+                    <CardTitle>Normal Metadata</CardTitle>
+                    <CardDescription>Metadata fields that appear normal and consistent</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="h-[300px] flex justify-center">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                          <Pie
-                            data={results.spreadData.demographics}
-                            cx="50%"
-                            cy="50%"
-                            labelLine={false}
-                            label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                            outerRadius={80}
-                            fill="#8884d8"
-                            dataKey="value"
-                          >
-                            {results.spreadData.demographics.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                            ))}
-                          </Pie>
-                          <Tooltip />
-                          <Legend />
-                        </PieChart>
-                      </ResponsiveContainer>
-                    </div>
-                    <div className="mt-4 text-sm text-muted-foreground">
-                      <p>
-                        The chart shows the age distribution of users sharing the content.
-                        {Math.max(...results.spreadData.demographics.map((d) => d.value)) > 25
-                          ? " The high concentration in specific age groups may indicate targeted content."
-                          : " The even distribution across age groups suggests broad appeal."}
-                      </p>
-                    </div>
+                    <MetadataTable
+                      metadata={[
+                        ...results.metadata.general,
+                        ...(results.metadata.image || []),
+                        ...(results.metadata.document || []),
+                      ].filter((item) => item.status === "normal")}
+                    />
                   </CardContent>
                 </Card>
               </TabsContent>
             </Tabs>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Related Content</CardTitle>
-                <CardDescription>Similar content that may be part of the same campaign</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>URL</TableHead>
-                      <TableHead>Similarity</TableHead>
-                      <TableHead>AI Probability</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {results.relatedContent.map((content, index) => (
-                      <TableRow key={index}>
-                        <TableCell className="font-medium truncate max-w-[200px]">{content.url}</TableCell>
-                        <TableCell>{content.similarity.toFixed(1)}%</TableCell>
-                        <TableCell>
-                          <Badge
-                            variant={
-                              content.aiProbability > 70
-                                ? "destructive"
-                                : content.aiProbability > 30
-                                  ? "warning"
-                                  : "default"
-                            }
-                          >
-                            {content.aiProbability.toFixed(1)}%
-                          </Badge>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-                <div className="mt-4 text-sm text-muted-foreground">
-                  <p>
-                    These URLs contain content similar to the analyzed URL and may be part of a coordinated campaign.
-                    High similarity and AI probability scores suggest potential AI-generated content networks.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
           </>
         )}
       </div>
     </div>
+  )
+}
+
+function MetadataTable({ metadata }) {
+  if (metadata.length === 0) {
+    return <div className="text-center py-8 text-muted-foreground">No metadata fields found in this category</div>
+  }
+
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Field</TableHead>
+          <TableHead>Value</TableHead>
+          <TableHead>Status</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {metadata.map((item, index) => (
+          <TableRow key={index}>
+            <TableCell className="font-medium">{item.name}</TableCell>
+            <TableCell>{item.value}</TableCell>
+            <TableCell>
+              <Badge variant={item.status === "suspicious" ? "destructive" : "secondary"}>
+                {item.status === "suspicious" ? "Suspicious" : "Normal"}
+              </Badge>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   )
 }
