@@ -254,7 +254,7 @@ export default function ImageAnalysisPage() {
                       disabled={isAnalyzing}
                     />
                     <Button asChild variant="secondary">
-                      <label htmlFor="image-upload" className="h-14 w-35 rounded-xl hover:bg-cyan-500 hover:text-black transition-colors duration-300 cursor-pointer p-4 gap-2">
+                      <label htmlFor="image-upload" className="flex items-center h-14 w-35 rounded-xl hover:bg-cyan-500 hover:text-black transition-colors duration-300 cursor-pointer p-4">
                         <Upload className="mr-2 h-4 w-4" />
                         Browse Files
                       </label>
@@ -325,7 +325,7 @@ export default function ImageAnalysisPage() {
                           disabled={isAnalyzing}
                         />
                         <Button asChild variant="secondary" size="sm">
-                          <label htmlFor="original-image-upload" className="h-14 w-32 rounded-xl hover:bg-cyan-500 hover:text-black transition-colors duration-300 cursor-pointer p-4 gap-2">
+                          <label htmlFor="original-image-upload" className="flex items-center h-14 w-32 rounded-xl hover:bg-cyan-500 hover:text-black transition-colors duration-300 cursor-pointer p-4">
                             <Upload className="mr-2 h-4 w-4" />
                             Browse
                           </label>
@@ -362,7 +362,7 @@ export default function ImageAnalysisPage() {
                           disabled={isAnalyzing}
                         />
                         <Button asChild variant="secondary" size="sm">
-                          <label htmlFor="suspected-image-upload" className="h-14 w-32 rounded-xl hover:bg-cyan-500 hover:text-black transition-colors duration-300 cursor-pointer p-4 gap-2">
+                          <label htmlFor="suspected-image-upload" className="flex items-center h-14 w-32 rounded-xl hover:bg-cyan-500 hover:text-black transition-colors duration-300 cursor-pointer p-4">
                             <Upload className="mr-2 h-4 w-4" />
                             Browse
                           </label>
@@ -468,7 +468,7 @@ export default function ImageAnalysisPage() {
                       <div className="relative w-full max-w-[600px]">
                         <video ref={videoRef} autoPlay className="w-full rounded-lg" />
                         <div className="absolute bottom-4 left-0 right-0 flex justify-center">
-                          <Button onClick={captureImage} variant="secondary" className="rounded-xl bg-white hover:bg-cyan-500 hover:text-black">
+                          <Button onClick={captureImage} variant="secondary" className="flex items-center rounded-xl bg-white hover:bg-cyan-500 hover:text-black">
                             <Camera className="mr-2 h-4 w-4" />
                             Capture
                           </Button>
@@ -489,7 +489,7 @@ export default function ImageAnalysisPage() {
                           <h3 className="font-medium">Use your webcam</h3>
                           <p className="text-sm text-muted-foreground">Capture an image to analyze</p>
                         </div>
-                        <Button onClick={startWebcam} variant="secondary" className="h-16 w-40 rounded-xl hover:bg-cyan-500 hover:text-black transition-colors duration-300 cursor-pointer p-4 gap-2">
+                        <Button onClick={startWebcam} variant="secondary" className="flex items-center h-16 w-40 rounded-xl hover:bg-cyan-500 hover:text-black transition-colors duration-300 cursor-pointer p-4">
                           <Camera className="mr-2 h-4 w-4" />
                           Start Webcam
                         </Button>
