@@ -1,7 +1,22 @@
 import { NextResponse } from "next/server"
 import { generateText } from "ai"
-import { openai } from "@ai-sdk/openai"
-import { replicate } from "@ai-sdk/replicate"
+import { createOpenAI } from "@ai-sdk/openai"
+import { createReplicate } from "@ai-sdk/replicate"
+
+// Initialize the API clients with your API keys
+const openaiClient = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+})
+
+const replicateClient = createReplicate({
+  apiToken: process.env.REPLICATE_API_TOKEN
+})
+
+// Deepfake detection model ID from Replicate
+const DEEPFAKE_MODEL = "schibsted/fakeyou:1a1515b0e52329d1c9be9b9102e8a1c1a0826a6f2f04b1f39dcd656a25f1f5ba"
+
+// GPT-4o model for detailed analysis
+const VISION_MODEL = "gpt-4o"
 
 export async function POST(request) {
   try {
@@ -13,20 +28,25 @@ export async function POST(request) {
       return NextResponse.json({ error: "Image is required" }, { status: 400 })
     }
 
+    // Verify API keys are present
+    if (!process.env.REPLICATE_API_TOKEN || !process.env.OPENAI_API_KEY) {
+      console.error("Missing API keys. Please set REPLICATE_API_TOKEN and OPENAI_API_KEY in your environment.")
+      return NextResponse.json({ error: "Server configuration error" }, { status: 500 })
+    }
+
     try {
       // Convert the image to base64
       const buffer = await image.arrayBuffer()
       const base64Image = Buffer.from(buffer).toString("base64")
       const dataURI = `data:${image.type};base64,${base64Image}`
 
-      // Use Replicate's state-of-the-art deepfake detection model
-      // This model has >90% accuracy on standard deepfake detection benchmarks
+      // Use Replicate's deepfake detection model
       const { text: analysisRaw } = await generateText({
-        model: replicate("schibsted/fakeyou:1a1515b0e52329d1c9be9b9102e8a1c1a0826a6f2f04b1f39dcd656a25f1f5ba"),
+        model: replicateClient.languageModel(DEEPFAKE_MODEL),
         prompt: dataURI,
       })
 
-      // Parse the result - this model returns a JSON string with probabilities
+      // Parse the result
       let analysis
       try {
         analysis = JSON.parse(analysisRaw)
@@ -45,7 +65,7 @@ export async function POST(request) {
         const originalDataURI = `data:${originalImage.type};base64,${originalBase64}`
 
         const { text: originalAnalysisRaw } = await generateText({
-          model: replicate("schibsted/fakeyou:1a1515b0e52329d1c9be9b9102e8a1c1a0826a6f2f04b1f39dcd656a25f1f5ba"),
+          model: replicateClient.languageModel(DEEPFAKE_MODEL),
           prompt: originalDataURI,
         })
 
@@ -60,7 +80,7 @@ export async function POST(request) {
 
       // Generate detailed analysis with GPT-4o Vision
       const { text: detailedAnalysis } = await generateText({
-        model: openai("gpt-4o"),
+        model: openaiClient(VISION_MODEL),
         prompt: `You are an expert in deepfake detection and image forensics. Analyze this image and identify specific artifacts or inconsistencies that might indicate it's AI-generated or manipulated.
         
         Focus on:
@@ -100,13 +120,21 @@ export async function POST(request) {
             }
           : null,
         detailedAnalysis: JSON.parse(detailedAnalysis),
-        // We don't have a real heatmap, but in production you would generate one
         heatmap: "/placeholder.svg?height=400&width=600",
+        timestamp: new Date().toISOString(),
       }
 
       return NextResponse.json(result)
     } catch (error) {
       console.error("Error calling AI models:", error)
+
+      // Enhanced error logging for API debugging
+      if (error.response) {
+        console.error("Response error details:", {
+          status: error.response.status,
+          data: error.response.data || error.response.statusText
+        })
+      }
 
       // Fallback to mock data if API calls fail
       const mockResult = {
@@ -141,13 +169,18 @@ export async function POST(request) {
           probability: 75 + Math.random() * 25,
         },
         explanation: "API call failed. This is mock data.",
+        error: error.message || "Unknown error",
+        timestamp: new Date().toISOString(),
       }
 
       return NextResponse.json(mockResult)
     }
   } catch (error) {
     console.error("Error analyzing image:", error)
-    return NextResponse.json({ error: "Failed to analyze image" }, { status: 500 })
+    return NextResponse.json({ 
+      error: "Failed to analyze image", 
+      message: error.message || "Unknown error",
+      timestamp: new Date().toISOString()
+    }, { status: 500 })
   }
 }
-
